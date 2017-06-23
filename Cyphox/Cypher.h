@@ -11,6 +11,6 @@ public:
 	~Cypher();
 
 	virtual string Encrypt( int seed, string decMsg ) = 0;
-	virtual string Decrypt( string encMsg ) = 0;
+	virtual string Decrypt( int seed, string encMsg ) = 0;
 };
 

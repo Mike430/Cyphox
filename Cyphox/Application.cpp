@@ -1,7 +1,6 @@
 #include "Application.h"
 
 
-
 Application::Application()
 {
 	_mConsoleHandle = GetStdHandle( STD_OUTPUT_HANDLE );
@@ -38,7 +37,7 @@ int Application::RunApplication()
 			string strToDecrypt;
 			strToDecrypt = GetGenericInput();
 
-			_mCryptograph.Decrypt( strToDecrypt );
+			_mCryptograph.Decrypt( _mSeed, strToDecrypt );
 		}
 		else if( input == _mCommands[ CMD_ENCRYPT ].first )
 		{
@@ -46,7 +45,6 @@ int Application::RunApplication()
 			string strToEncrypt;
 			strToEncrypt = GetGenericInput();
 
-			cout << "We're going for: " << strToEncrypt << endl;
 			_mCryptograph.Encrypt( _mSeed, strToEncrypt );
 		}
 		else if( input == _mCommands[ CMD_SET_SEED ].first )

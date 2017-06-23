@@ -1,7 +1,6 @@
 #include "FirstCryptor.h"
 
 
-
 char FirstCryptor::_mCharSet[] = {
 	'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
 	'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
@@ -10,6 +9,7 @@ char FirstCryptor::_mCharSet[] = {
 	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 	'-', '_', '*', '+', '&', '^', '%', '$', '£', '!', '?', '/', '\\', '>', '<', '@', '|', ' ', '\'',	':', ';', '\(', '\)', '\[', '\]', '\{', '\}', '\#', '\~', ',', '.'
 };
+
 
 FirstCryptor::FirstCryptor()
 {
@@ -20,13 +20,11 @@ FirstCryptor::~FirstCryptor()
 {
 }
 
+
 string FirstCryptor::Encrypt( int seed, string decMsg )
 {
-	cout << "input: " << decMsg << " seed: " << seed << endl;
-
 	string encMsg = "";
 	srand( seed );
-	encMsg = AppendEnc( encMsg, seed );
 	for( int i = 0; i < decMsg.length(); i++ )
 	{
 		int ZeroIndex = FindNextZeroIndex();
@@ -38,31 +36,21 @@ string FirstCryptor::Encrypt( int seed, string decMsg )
 		encMsg = AppendEnc( encMsg, charPos );
 	}
 
-	cout << "output: " << encMsg << endl << endl;
+	cout << "Output: " << encMsg << endl << endl;
 	return encMsg;
 }
 
-string FirstCryptor::Decrypt( string encMsg )
+
+string FirstCryptor::Decrypt( int seed, string encMsg )
 {
 	string decMsg = "";
+	srand( seed );
 
-	//string seedStr = encMsg.substr( 0, encMsg.find( _mSeparator ) );
-
-	vector<string> catcher = BreakStringInTwo( encMsg, _mSeparator );
-
-	string seedStr = catcher.at( 0 );
-	string theRest = catcher.at( 1 );
-	int seedNumb;
-	istringstream( seedStr ) >> seedNumb;
-	srand( seedNumb );
-
-	cout << "Decryption: " << theRest << " seedNumb: " << seedNumb << endl;
-
-	while( theRest.length() > 0 )
+	while( encMsg.length() > 0 )
 	{
-		vector<string> catcher = BreakStringInTwo( theRest, _mSeparator );
+		vector<string> catcher = BreakStringInTwo( encMsg, _mSeparator );
 		string nextString = catcher.at( 0 );
-		theRest = catcher.at( 1 );
+		encMsg = catcher.at( 1 );
 
 		int nextNumber;
 		istringstream( nextString ) >> nextNumber;//when encryption abandoned this returns -858993460
@@ -70,14 +58,13 @@ string FirstCryptor::Decrypt( string encMsg )
 		char nextChar = FindCharWithVecFromZero( nextNumber, zeroIndex );
 		decMsg += nextChar;
 	}
-	cout << "Decrypted Message equals: " << decMsg << endl << endl;
+	cout << "Output: " << decMsg << endl << endl;
 	return decMsg;
 }
 
 
 
 // PrivateEncryption
-
 int FirstCryptor::FindVecForCharFromZeroIndex( char c, int zeroIndex )
 {
 	int globalPos = FindCharGlobalIndex( c );
@@ -120,6 +107,7 @@ int FirstCryptor::FindNextZeroIndex()
 	return rand() % _mCharSetLength;
 }
 
+
 int FirstCryptor::FindCharGlobalIndex( char c )
 {
 	int returnIndex = 0;
@@ -138,10 +126,12 @@ int FirstCryptor::FindCharGlobalIndex( char c )
 	return returnIndex;
 }
 
+
 string FirstCryptor::AppendEnc( string base, int extension )
 {
 	return base + to_string( extension ) + _mSeparator;
 }
+
 
 void FirstCryptor::PrintCharSet()
 {
@@ -150,6 +140,7 @@ void FirstCryptor::PrintCharSet()
 		printf( "%i\t -> %c\n", i + 1, _mCharSet[ i ] );
 	}
 }
+
 
 vector<string> FirstCryptor::BreakStringInTwo( string str, string target )
 {

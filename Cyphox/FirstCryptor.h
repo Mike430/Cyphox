@@ -23,7 +23,7 @@ public:
 	~FirstCryptor();
 
 	string Encrypt( int seed, string decMsg );
-	string Decrypt( string encMsg );
+	string Decrypt( int seed, string encMsg );
 
 	void PrintCharSet();
 };
