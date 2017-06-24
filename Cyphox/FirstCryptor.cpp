@@ -7,7 +7,7 @@ char FirstCryptor::_mCharSet[] = {
 	'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
 	'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
 	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-	'-', '_', '*', '+', '&', '^', '%', '$', '£', '!', '?', '/', '\\', '>', '<', '@', '|', ' ', '\'',	':', ';', '\(', '\)', '\[', '\]', '\{', '\}', '\#', '\~', ',', '.'
+	'-', '_', '*', '+', '&', '^', '%', '$', SPECIAL_CHAR_GBP, '!', '?', '/', SPECIAL_CHAR_BACKSLASH, '>', '<', '@', '|', ' ', '\'',	':', ';', '\(', '\)', '\[', '\]', '\{', '\}', '\#', '\~', ',', '.'
 };
 
 
@@ -145,10 +145,9 @@ string FirstCryptor::AppendEnc( string base, int extension )
 
 void FirstCryptor::PrintCharSet()
 {
-	for( int i = 0; i < _mCharSetLength; i++ )
-	{
-		printf( "%i\t -> %c\n", i + 1, _mCharSet[ i ] );
-	}
+	cout << "a - z ( lowercase and uppercase )" << endl;
+	cout << "0 - 9" << endl;
+	cout << "- _ * + & ^ % $ " << SPECIAL_CHAR_GBP << " ! ? / " << SPECIAL_CHAR_BACKSLASH << " > < @ |   ' : ; ( ) [ ] { } # ~ , ." << endl;
 }
 
 

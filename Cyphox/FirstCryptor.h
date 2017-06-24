@@ -6,6 +6,9 @@
 
 #define ERROR_CODE -1000001
 
+static const char SPECIAL_CHAR_GBP = '\x9C';
+static const char SPECIAL_CHAR_BACKSLASH = '\\';
+
 class FirstCryptor : public Cypher
 {
 private:
