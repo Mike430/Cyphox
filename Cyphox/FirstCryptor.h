@@ -2,6 +2,7 @@
 #include "Cypher.h"
 #include <sstream>
 #include <vector>
+#include <climits>
 
 #define ERROR_CODE -1000001
 

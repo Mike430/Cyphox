@@ -49,6 +49,13 @@ string FirstCryptor::Decrypt( int seed, string encMsg )
 	while( encMsg.length() > 0 )
 	{
 		vector<string> catcher = BreakStringInTwo( encMsg, _mSeparator );
+
+		if( catcher.size() != 2 )
+		{
+			decMsg = "Decryption Aborted.";
+			break;
+		}
+
 		string nextString = catcher.at( 0 );
 		encMsg = catcher.at( 1 );
 
@@ -87,13 +94,16 @@ char FirstCryptor::FindCharWithVecFromZero( int vec, int zeroIndex )
 	int desiredIndex = zeroIndex + vec;
 
 	// Perform wrap around to make decypering harder
-	if( desiredIndex >= _mCharSetLength )
+	while( desiredIndex >= _mCharSetLength || desiredIndex < 0 )
 	{
-		desiredIndex -= _mCharSetLength;
-	}
-	if( desiredIndex < 0 )
-	{
-		desiredIndex += _mCharSetLength;
+		if( desiredIndex >= _mCharSetLength )
+		{
+			desiredIndex -= _mCharSetLength;
+		}
+		if( desiredIndex < 0 )
+		{
+			desiredIndex += _mCharSetLength;
+		}
 	}
 
 	return _mCharSet[ desiredIndex ];
@@ -150,6 +160,12 @@ vector<string> FirstCryptor::BreakStringInTwo( string str, string target )
 
 	vector<string> returnVal;
 	unsigned int firstCutPos = str.find( target );
+
+	if( firstCutPos == UINT_MAX )
+	{
+		cout << DecryptionErrorMSG << endl;
+		return returnVal;
+	}
 	returnVal.push_back( str.substr( 0, firstCutPos ) );
 	firstCutPos += target.length();
 	returnVal.push_back( str.substr( firstCutPos, str.length() ) );

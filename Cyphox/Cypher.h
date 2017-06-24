@@ -6,6 +6,8 @@ using namespace std;
 
 class Cypher
 {
+protected:
+	static const string DecryptionErrorMSG;
 public:
 	Cypher();
 	~Cypher();
