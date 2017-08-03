@@ -37,7 +37,7 @@ int Application::RunApplication()
 			string strToDecrypt;
 			strToDecrypt = GetGenericInput();
 
-			_mCryptograph.Decrypt( _mSeed, strToDecrypt );
+			cout << "output: " << endl << _mCryptograph.Decrypt( _mSeed, strToDecrypt );
 		}
 		else if( input == _mCommands[ CMD_ENCRYPT ].first )
 		{
@@ -45,7 +45,7 @@ int Application::RunApplication()
 			string strToEncrypt;
 			strToEncrypt = GetGenericInput();
 
-			_mCryptograph.Encrypt( _mSeed, strToEncrypt );
+			cout << "output: " << endl << _mCryptograph.Encrypt( _mSeed, strToEncrypt );
 		}
 		else if( input == _mCommands[ CMD_DECRYPT_FILE ].first )
 		{
@@ -58,7 +58,7 @@ int Application::RunApplication()
 				inPath = GetGenericInput();
 				inputOkay = APP_CODE_SUCCESS == IsGivenPathValid( inPath );//C:\Users\ymike\Desktop\MyPasswords.txt
 			}
-						
+
 
 			DecryptTxtFile( inPath );
 		}
@@ -191,7 +191,7 @@ void Application::PrintHelp()
 }
 
 
-vector<string> Application::ReadInFileLines( string path )
+string Application::ReadInFileAsStr( string path )
 {
 	ifstream file( path, std::ios::ate | std::ios::binary );
 	size_t fileSize = ( size_t ) file.tellg();
@@ -199,22 +199,11 @@ vector<string> Application::ReadInFileLines( string path )
 	file.seekg( 0 );
 	file.read( buffer.data(), fileSize );
 
-	vector<string> txtFileLines = {};
-	string newStr = "";
-	txtFileLines.push_back( newStr );
-	cout << "buffer size = " << buffer.size() << endl;
+	string txtFileLines = "";
 
 	for( int i = 0; i < buffer.size(); i++ )
 	{
-		if( buffer.at( i ) == '\n' )
-		{
-			string newStr = "";
-			txtFileLines.push_back( newStr );
-		}
-		else
-		{
-			txtFileLines.at( txtFileLines.size() - 1 ) += buffer.at( i );
-		}
+		txtFileLines += buffer.at( i );
 	}
 
 	file.close();
@@ -223,17 +212,11 @@ vector<string> Application::ReadInFileLines( string path )
 }
 
 
-AppStatusCode Application::WriteNewTxtFile( string outPath, vector<string> lines )
+AppStatusCode Application::WriteNewTxtFile( string outPath, string content )
 {
 	ofstream newFile( outPath, std::ios::ate | std::ios::binary );
 
-	string outputStr = "";
-	for( int i = 0; i < lines.size(); i++ )
-	{
-		outputStr += lines.at( i );
-	}
-
-	newFile.write( outputStr.c_str(), outputStr.size() );
+	newFile.write( content.c_str(), content.size() );
 	newFile.close();
 	return APP_CODE_SUCCESS;
 }
@@ -243,6 +226,17 @@ AppStatusCode Application::WriteNewTxtFile( string outPath, vector<string> lines
 AppStatusCode Application::DecryptTxtFile( string path )
 {
 	AppStatusCode returnCode = APP_CODE_SUCCESS;
+	string fileAsString = ReadInFileAsStr( path );
+
+	cout << endl << "Original: " << endl;
+	SetConsoleTextAttribute( _mConsoleHandle, RED );
+	cout << fileAsString << endl;
+	SetConsoleTextAttribute( _mConsoleHandle, WHITE );
+
+	cout << endl << "Decrypted: " << endl;
+	SetConsoleTextAttribute( _mConsoleHandle, GREEN );
+	cout << _mCryptograph.Decrypt( _mSeed,  fileAsString) << endl;
+	SetConsoleTextAttribute( _mConsoleHandle, WHITE );
 
 	return returnCode;
 }
@@ -252,21 +246,23 @@ AppStatusCode Application::EncryptTxtFile( string inPath, string outPath )
 {
 	AppStatusCode returnCode = APP_CODE_SUCCESS;
 
-	vector<string> FileLines = ReadInFileLines( inPath );
-	vector<string> FileLinesEnc = {};
+	string FileLines = ReadInFileAsStr( inPath );
+	string FileLinesEnc = {};
 
 	for( int i = 0; i < FileLines.size(); i++ )
 	{
-		cout << i << " reg : " << FileLines.at( i ) << endl;
-		FileLinesEnc.push_back( _mCryptograph.Encrypt( _mSeed, FileLines.at( i ) ) );
+		FileLinesEnc = _mCryptograph.Encrypt( _mSeed, FileLines );
 	}
-	cout << endl;
 
-	for( int i = 0; i < FileLinesEnc.size(); i++ )
-	{
-		cout << i << " enc : " << FileLinesEnc.at( i ) << endl;
-	}
-	cout << endl;
+	cout << endl << "Original: " << endl;
+	SetConsoleTextAttribute( _mConsoleHandle, RED );
+	cout << FileLines << endl;
+	SetConsoleTextAttribute( _mConsoleHandle, WHITE );
+
+	cout << endl << "Encrypted: " << endl;
+	SetConsoleTextAttribute( _mConsoleHandle, GREEN );
+	cout << FileLinesEnc << endl;
+	SetConsoleTextAttribute( _mConsoleHandle, WHITE );
 
 	WriteNewTxtFile( outPath, FileLinesEnc );
 

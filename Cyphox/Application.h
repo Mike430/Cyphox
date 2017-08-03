@@ -54,8 +54,8 @@ private:
 	int RetriveValidNumberInput();
 	AppStatusCode IsInputValid( string input );
 
-	vector<string> ReadInFileLines(string path);
-	AppStatusCode WriteNewTxtFile( string outPath, vector<string> lines);
+	string ReadInFileAsStr(string path);
+	AppStatusCode WriteNewTxtFile( string outPath, string content);
 	AppStatusCode IsGivenPathValid(string path);
 	AppStatusCode DecryptTxtFile(string path);
 	AppStatusCode EncryptTxtFile(string inPath, string outPath);
