@@ -21,10 +21,11 @@ FirstCryptor::~FirstCryptor()
 }
 
 
-string FirstCryptor::Encrypt( int seed, string decMsg )
+string FirstCryptor::Encrypt( uint64_t seed, string decMsg )
 {
 	string encMsg = "";
 	srand( seed );
+	//srand( UINT64_MAX );
 	for( int i = 0; i < decMsg.length(); i++ )
 	{
 		int ZeroIndex = FindNextZeroIndex();
@@ -40,7 +41,7 @@ string FirstCryptor::Encrypt( int seed, string decMsg )
 }
 
 
-string FirstCryptor::Decrypt( int seed, string encMsg )
+string FirstCryptor::Decrypt( uint64_t seed, string encMsg )
 {
 	string decMsg = "";
 	srand( seed );

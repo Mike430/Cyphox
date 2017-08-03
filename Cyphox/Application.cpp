@@ -5,12 +5,14 @@ Application::Application()
 {
 	_mConsoleHandle = GetStdHandle( STD_OUTPUT_HANDLE );
 
-	SetConsoleTextAttribute( _mConsoleHandle, BLUE );
-	cout << "Thankyou for choosing Cyphox. Please type 'help' for instructions:" << endl;
-	SetConsoleTextAttribute( _mConsoleHandle, WHITE );
+	SetConsoleTextAttribute( _mConsoleHandle, COLOUR_WHITE );
+	cout << "Thank you for choosing Cyphox!" << endl << endl;
+	PrintHelp();
 
 	_mQuit = false;
-	_mSeed = 0;
+	srand( time(NULL) );
+	_mSeed = rand() % UINT64_MAX;// first number is always tighed t the system time
+	_mSeed = rand() % UINT64_MAX;
 }
 
 
@@ -23,6 +25,10 @@ int Application::RunApplication()
 {
 	do
 	{
+		SetConsoleTextAttribute( _mConsoleHandle, COLOUR_YELLOW );
+		cout << endl << "Don't forget to update your seed! Your current seed is: " << _mSeed << endl;
+		SetConsoleTextAttribute( _mConsoleHandle, COLOUR_WHITE );
+
 		string input;
 		input = GetGenericInput();
 		if( IsInputValid( input ) != APP_CODE_SUCCESS ) continue;
@@ -33,7 +39,7 @@ int Application::RunApplication()
 		}
 		else if( input == _mCommands[ CMD_DECRYPT ].first )
 		{
-			cout << "Please enter your encrypted message and we'll decrypt it with the current seed value:" << endl;
+			cout << "Please enter your encrypted message and we'll decrypt:" << endl;
 			string strToDecrypt;
 			strToDecrypt = GetGenericInput();
 
@@ -41,7 +47,7 @@ int Application::RunApplication()
 		}
 		else if( input == _mCommands[ CMD_ENCRYPT ].first )
 		{
-			cout << "Please enter your message and we'll encrypt it with the current seed value ( " << _mSeed << " ):" << endl;
+			cout << "Please enter your message and we'll encrypt it:" << endl;
 			string strToEncrypt;
 			strToEncrypt = GetGenericInput();
 
@@ -89,15 +95,15 @@ int Application::RunApplication()
 		else if( input == _mCommands[ CMD_SET_SEED ].first )
 		{
 			_mSeed = RetriveValidNumberInput();
-			SetConsoleTextAttribute( _mConsoleHandle, GREEN );
+			SetConsoleTextAttribute( _mConsoleHandle, COLOUR_GREEN );
 			cout << "The new seed is: " << _mSeed << endl;
-			SetConsoleTextAttribute( _mConsoleHandle, WHITE );
+			SetConsoleTextAttribute( _mConsoleHandle, COLOUR_WHITE );
 		}
 		else if( input == _mCommands[ CMD_HELP ].first )
 		{
 			PrintHelp();
 		}
-
+		
 	} while( !_mQuit );
 
 	return APP_CODE_SUCCESS;
@@ -119,21 +125,21 @@ int Application::RetriveValidNumberInput()
 
 	bool isInputValid = false;
 	string integerStr;
-	int returnNumber;
+	uint64_t returnNumber;
 
 	do
 	{
 		try
 		{
 			integerStr = GetGenericInput();
-			returnNumber = stoi( integerStr );
+			returnNumber = stoull( integerStr );
 			isInputValid = true;
 		}
 		catch( exception e )
 		{
-			SetConsoleTextAttribute( _mConsoleHandle, RED );
+			SetConsoleTextAttribute( _mConsoleHandle, COLOUR_RED );
 			cout << integerStr << " is not a valid integer, try again:" << endl;
-			SetConsoleTextAttribute( _mConsoleHandle, WHITE );
+			SetConsoleTextAttribute( _mConsoleHandle, COLOUR_WHITE );
 			isInputValid = false;
 		}
 	} while( !isInputValid );
@@ -152,9 +158,9 @@ AppStatusCode Application::IsInputValid( string input )
 		}
 	}
 
-	SetConsoleTextAttribute( _mConsoleHandle, RED );
+	SetConsoleTextAttribute( _mConsoleHandle, COLOUR_RED );
 	cout << "You have entered invalid input. Please type 'help' for the manual." << endl;
-	SetConsoleTextAttribute( _mConsoleHandle, WHITE );
+	SetConsoleTextAttribute( _mConsoleHandle, COLOUR_WHITE );
 
 	return APP_CODE_FAILURE_GENERIC;
 }
@@ -179,15 +185,23 @@ AppStatusCode Application::IsGivenPathValid( string path )
 
 void Application::PrintHelp()
 {
-	SetConsoleTextAttribute( _mConsoleHandle, BLUE );
+	SetConsoleTextAttribute( _mConsoleHandle, COLOUR_BLUE );
 	cout << "Here are all your possible commands:" << endl;
-	SetConsoleTextAttribute( _mConsoleHandle, WHITE );
+	SetConsoleTextAttribute( _mConsoleHandle, COLOUR_WHITE );
 
 	for( pair<string, pair<string, string>> element : _mCommands )
 	{
 		pair<string, string> elem = element.second;
 		cout << "-\t " << elem.first << " = " << elem.second << endl;
 	}
+
+	SetConsoleTextAttribute( _mConsoleHandle, COLOUR_RED );
+	cout << endl << "IMPORTANT NOTICE:" << endl;
+	cout << "- Assert your seed value is what you want before running any commands!" << endl;
+	cout << "- All commands involving cryptography use the current seed value." << endl;
+	cout << "- A seed will be randomly generated every time Cyphox is started." << endl;
+	cout << "- The seed can be any number between 0 and " << UINT64_MAX << " (a positive 64 bit integer)." << endl;
+	SetConsoleTextAttribute( _mConsoleHandle, COLOUR_WHITE );
 }
 
 
@@ -229,14 +243,14 @@ AppStatusCode Application::DecryptTxtFile( string path )
 	string fileAsString = ReadInFileAsStr( path );
 
 	cout << endl << "Original: " << endl;
-	SetConsoleTextAttribute( _mConsoleHandle, RED );
+	SetConsoleTextAttribute( _mConsoleHandle, COLOUR_RED );
 	cout << fileAsString << endl;
-	SetConsoleTextAttribute( _mConsoleHandle, WHITE );
+	SetConsoleTextAttribute( _mConsoleHandle, COLOUR_WHITE );
 
 	cout << endl << "Decrypted: " << endl;
-	SetConsoleTextAttribute( _mConsoleHandle, GREEN );
+	SetConsoleTextAttribute( _mConsoleHandle, COLOUR_GREEN );
 	cout << _mCryptograph.Decrypt( _mSeed,  fileAsString) << endl;
-	SetConsoleTextAttribute( _mConsoleHandle, WHITE );
+	SetConsoleTextAttribute( _mConsoleHandle, COLOUR_WHITE );
 
 	return returnCode;
 }
@@ -255,14 +269,14 @@ AppStatusCode Application::EncryptTxtFile( string inPath, string outPath )
 	}
 
 	cout << endl << "Original: " << endl;
-	SetConsoleTextAttribute( _mConsoleHandle, RED );
+	SetConsoleTextAttribute( _mConsoleHandle, COLOUR_RED );
 	cout << FileLines << endl;
-	SetConsoleTextAttribute( _mConsoleHandle, WHITE );
+	SetConsoleTextAttribute( _mConsoleHandle, COLOUR_WHITE );
 
 	cout << endl << "Encrypted: " << endl;
-	SetConsoleTextAttribute( _mConsoleHandle, GREEN );
+	SetConsoleTextAttribute( _mConsoleHandle, COLOUR_GREEN );
 	cout << FileLinesEnc << endl;
-	SetConsoleTextAttribute( _mConsoleHandle, WHITE );
+	SetConsoleTextAttribute( _mConsoleHandle, COLOUR_WHITE );
 
 	WriteNewTxtFile( outPath, FileLinesEnc );
 

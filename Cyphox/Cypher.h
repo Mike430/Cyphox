@@ -12,7 +12,7 @@ public:
 	Cypher();
 	~Cypher();
 
-	virtual string Encrypt( int seed, string decMsg ) = 0;
-	virtual string Decrypt( int seed, string encMsg ) = 0;
+	virtual string Encrypt( uint64_t seed, string decMsg ) = 0;
+	virtual string Decrypt( uint64_t seed, string encMsg ) = 0;
 };
 

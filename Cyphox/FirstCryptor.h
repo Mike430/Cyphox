@@ -26,8 +26,8 @@ public:
 	FirstCryptor();
 	~FirstCryptor();
 
-	string Encrypt( int seed, string decMsg );
-	string Decrypt( int seed, string encMsg );
+	string Encrypt( uint64_t seed, string decMsg );
+	string Decrypt( uint64_t seed, string encMsg );
 
 	void PrintCharSet();
 };
