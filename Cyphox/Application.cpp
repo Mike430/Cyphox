@@ -47,6 +47,45 @@ int Application::RunApplication()
 
 			_mCryptograph.Encrypt( _mSeed, strToEncrypt );
 		}
+		else if( input == _mCommands[ CMD_DECRYPT_FILE ].first )
+		{
+			string inPath;
+			bool inputOkay = false;
+
+			while( !inputOkay )
+			{
+				cout << "Please enter the complete filepath and txt file name so we can decrypt it.";
+				inPath = GetGenericInput();
+				inputOkay = APP_CODE_SUCCESS == IsGivenPathValid( inPath );//C:\Users\ymike\Desktop\MyPasswords.txt
+			}
+						
+
+			DecryptTxtFile( inPath );
+		}
+		else if( input == _mCommands[ CMD_ENCRYPT_FILE ].first )
+		{
+			string inPath;
+			string outPath;
+			bool inputOkay = false;
+
+			while( !inputOkay )
+			{
+				cout << "Please enter the complete filepath and txt file name so we can decrypt it.";
+				inPath = GetGenericInput();
+				inputOkay = APP_CODE_SUCCESS == IsGivenPathValid( inPath );//C:\Users\ymike\Desktop\MyPasswords.txt
+			}
+
+			inputOkay = false;
+
+			while( !inputOkay )
+			{
+				cout << "Please enter the complete filepath and file name for where you would like the output to go.";
+				outPath = GetGenericInput();
+				inputOkay = APP_CODE_SUCCESS == IsGivenPathValid( outPath );//C:\Users\ymike\Desktop\CyphoxOutput.txt
+			}
+
+			EncryptTxtFile( inPath, outPath );
+		}
 		else if( input == _mCommands[ CMD_SET_SEED ].first )
 		{
 			_mSeed = RetriveValidNumberInput();
@@ -121,6 +160,23 @@ AppStatusCode Application::IsInputValid( string input )
 }
 
 
+AppStatusCode Application::IsGivenPathValid( string path )
+{
+	ifstream file( path );
+
+	if( !file )//|| !file.is_open  )
+	{
+		cout << "Filepath is invalid." << endl;
+		return APP_CODE_FAILURE_GENERIC;
+	}
+	else
+	{
+		file.close();
+		return APP_CODE_SUCCESS;
+	}
+}
+
+
 void Application::PrintHelp()
 {
 	SetConsoleTextAttribute( _mConsoleHandle, BLUE );
@@ -132,4 +188,87 @@ void Application::PrintHelp()
 		pair<string, string> elem = element.second;
 		cout << "-\t " << elem.first << " = " << elem.second << endl;
 	}
+}
+
+
+vector<string> Application::ReadInFileLines( string path )
+{
+	ifstream file( path, std::ios::ate | std::ios::binary );
+	size_t fileSize = ( size_t ) file.tellg();
+	std::vector<char> buffer( fileSize );
+	file.seekg( 0 );
+	file.read( buffer.data(), fileSize );
+
+	vector<string> txtFileLines = {};
+	string newStr = "";
+	txtFileLines.push_back( newStr );
+	cout << "buffer size = " << buffer.size() << endl;
+
+	for( int i = 0; i < buffer.size(); i++ )
+	{
+		if( buffer.at( i ) == '\n' )
+		{
+			string newStr = "";
+			txtFileLines.push_back( newStr );
+		}
+		else
+		{
+			txtFileLines.at( txtFileLines.size() - 1 ) += buffer.at( i );
+		}
+	}
+
+	file.close();
+
+	return txtFileLines;
+}
+
+
+AppStatusCode Application::WriteNewTxtFile( string outPath, vector<string> lines )
+{
+	ofstream newFile( outPath, std::ios::ate | std::ios::binary );
+
+	string outputStr = "";
+	for( int i = 0; i < lines.size(); i++ )
+	{
+		outputStr += lines.at( i );
+	}
+
+	newFile.write( outputStr.c_str(), outputStr.size() );
+	newFile.close();
+	return APP_CODE_SUCCESS;
+}
+
+
+
+AppStatusCode Application::DecryptTxtFile( string path )
+{
+	AppStatusCode returnCode = APP_CODE_SUCCESS;
+
+	return returnCode;
+}
+
+
+AppStatusCode Application::EncryptTxtFile( string inPath, string outPath )
+{
+	AppStatusCode returnCode = APP_CODE_SUCCESS;
+
+	vector<string> FileLines = ReadInFileLines( inPath );
+	vector<string> FileLinesEnc = {};
+
+	for( int i = 0; i < FileLines.size(); i++ )
+	{
+		cout << i << " reg : " << FileLines.at( i ) << endl;
+		FileLinesEnc.push_back( _mCryptograph.Encrypt( _mSeed, FileLines.at( i ) ) );
+	}
+	cout << endl;
+
+	for( int i = 0; i < FileLinesEnc.size(); i++ )
+	{
+		cout << i << " enc : " << FileLinesEnc.at( i ) << endl;
+	}
+	cout << endl;
+
+	WriteNewTxtFile( outPath, FileLinesEnc );
+
+	return returnCode;
 }

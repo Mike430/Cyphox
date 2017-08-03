@@ -7,7 +7,7 @@ char FirstCryptor::_mCharSet[] = {
 	'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
 	'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
 	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-	'-', '_', '*', '+', '&', '^', '%', '$', SPECIAL_CHAR_GBP, '!', '?', '/', SPECIAL_CHAR_BACKSLASH, '>', '<', '@', '|', ' ', '\'',	':', ';', '\(', '\)', '\[', '\]', '\{', '\}', '\#', '\~', ',', '.'
+	'-', '_', '*', '+', '&', '^', '%', '$', SPECIAL_CHAR_GBP, '!', '?', '/', SPECIAL_CHAR_BACKSLASH, '>', '<', '@', '|', ' ', '\'',	':', ';', '\(', '\)', '\[', '\]', '\{', '\}', '\#', '\~', ',', '.', '\n', '\r'
 };
 
 
@@ -36,7 +36,6 @@ string FirstCryptor::Encrypt( int seed, string decMsg )
 		encMsg = AppendEnc( encMsg, charPos );
 	}
 
-	cout << "Output: " << encMsg << endl << endl;
 	return encMsg;
 }
 
@@ -65,7 +64,7 @@ string FirstCryptor::Decrypt( int seed, string encMsg )
 		char nextChar = FindCharWithVecFromZero( nextNumber, zeroIndex );
 		decMsg += nextChar;
 	}
-	cout << "Output: " << decMsg << endl << endl;
+
 	return decMsg;
 }
 

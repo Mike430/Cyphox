@@ -14,7 +14,7 @@ class FirstCryptor : public Cypher
 private:
 	static char _mCharSet[];
 	const string _mSeparator = "/";
-	int _mCharSetLength = 93;
+	int _mCharSetLength = 95;
 
 	int FindNextZeroIndex();
 	int FindVecForCharFromZeroIndex( char c, int zeroIndex );
