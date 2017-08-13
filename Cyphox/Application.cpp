@@ -43,7 +43,7 @@ int Application::RunApplication()
 			string strToDecrypt;
 			strToDecrypt = GetGenericInput();
 
-			cout << "output: " << endl << _mCryptograph.Decrypt( _mSeed, strToDecrypt );
+			cout << endl << "output: " << endl << _mCryptograph.Decrypt( _mSeed, strToDecrypt );
 		}
 		else if( input == _mCommands[ CMD_ENCRYPT ].first )
 		{
@@ -51,7 +51,7 @@ int Application::RunApplication()
 			string strToEncrypt;
 			strToEncrypt = GetGenericInput();
 
-			cout << "output: " << endl << _mCryptograph.Encrypt( _mSeed, strToEncrypt );
+			cout << endl << "output: " << endl << _mCryptograph.Encrypt( _mSeed, strToEncrypt );
 		}
 		else if( input == _mCommands[ CMD_DECRYPT_FILE ].first )
 		{
@@ -76,7 +76,7 @@ int Application::RunApplication()
 
 			while( !inputOkay )
 			{
-				cout << "Please enter the complete filepath and txt file name so we can decrypt it.";
+				cout << "Please enter the complete filepath and txt file name so we can encrypt it.";
 				inPath = GetGenericInput();
 				inputOkay = APP_CODE_SUCCESS == IsGivenPathValid( inPath );//C:\Users\ymike\Desktop\MyPasswords.txt
 			}
@@ -263,10 +263,7 @@ AppStatusCode Application::EncryptTxtFile( string inPath, string outPath )
 	string FileLines = ReadInFileAsStr( inPath );
 	string FileLinesEnc = {};
 
-	for( int i = 0; i < FileLines.size(); i++ )
-	{
-		FileLinesEnc = _mCryptograph.Encrypt( _mSeed, FileLines );
-	}
+	FileLinesEnc = _mCryptograph.Encrypt( _mSeed, FileLines );
 
 	cout << endl << "Original: " << endl;
 	SetConsoleTextAttribute( _mConsoleHandle, COLOUR_RED );

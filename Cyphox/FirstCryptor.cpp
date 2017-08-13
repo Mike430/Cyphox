@@ -11,8 +11,17 @@ char FirstCryptor::_mCharSet[] = {
 };
 
 
+char FirstCryptor::_mNegativeCharSet[] = {};
+
+
 FirstCryptor::FirstCryptor()
 {
+	for( int i = 0; i < CHAR_SET_SIZE; i++ )
+	{
+		_mNegativeCharSet[ i ] = _mCharSet[ i ];
+		_mNegativeCharSet[ i ] ^= UINT8_MAX - 3;
+		//cout << _mCharSet[ i ] << " = " << _mNegativeCharSet[ i ] << " is " << ( _mCharSet[ i ] == _mNegativeCharSet[ i ] ? "BAD" : "OKAY" ) << endl;
+	}
 }
 
 
@@ -25,7 +34,7 @@ string FirstCryptor::Encrypt( uint64_t seed, string decMsg )
 {
 	string encMsg = "";
 	srand( seed );
-	//srand( UINT64_MAX );
+
 	for( int i = 0; i < decMsg.length(); i++ )
 	{
 		int ZeroIndex = FindNextZeroIndex();
@@ -34,7 +43,9 @@ string FirstCryptor::Encrypt( uint64_t seed, string decMsg )
 		{
 			return "\nEncryption abandoned due to unqualified character\n";
 		}
-		encMsg = AppendEnc( encMsg, charPos );
+		char next = charPos < 0 ? _mNegativeCharSet[ charPos * -1 ] : _mCharSet[ charPos ];
+		next ^= seed;
+		encMsg += next;
 	}
 
 	return encMsg;
@@ -44,26 +55,33 @@ string FirstCryptor::Encrypt( uint64_t seed, string decMsg )
 string FirstCryptor::Decrypt( uint64_t seed, string encMsg )
 {
 	string decMsg = "";
+	bool charFound;
+	uint8_t currentIndex;
+	char queryChar;
+	int zeroIndex;
 	srand( seed );
 
-	while( encMsg.length() > 0 )
+	for( int i = 0; i < encMsg.size(); i++ )
 	{
-		vector<string> catcher = BreakStringInTwo( encMsg, _mSeparator );
+		zeroIndex = FindNextZeroIndex();
+		charFound = false;
+		currentIndex = 0;
 
-		if( catcher.size() != 2 )
+		encMsg[ i ] ^= seed;
+
+		// Find char index
+		while( charFound == false && currentIndex < CHAR_SET_SIZE * 2 )
 		{
-			decMsg = "Decryption Aborted.";
-			break;
+			queryChar = ( currentIndex >= CHAR_SET_SIZE ? _mNegativeCharSet[ currentIndex - CHAR_SET_SIZE ] : _mCharSet[ currentIndex ] );
+			if( encMsg[ i ] == queryChar )
+			{
+				charFound = true;
+				int queryCharVec = currentIndex >= CHAR_SET_SIZE ? ( (currentIndex - CHAR_SET_SIZE) * -1 ) : currentIndex;
+				char nextChar = FindCharWithVecFromZero( queryCharVec, zeroIndex );
+				decMsg += nextChar;
+			}
+			currentIndex++;
 		}
-
-		string nextString = catcher.at( 0 );
-		encMsg = catcher.at( 1 );
-
-		int nextNumber;
-		istringstream( nextString ) >> nextNumber;//when encryption abandoned this returns -858993460
-		int zeroIndex = FindNextZeroIndex();
-		char nextChar = FindCharWithVecFromZero( nextNumber, zeroIndex );
-		decMsg += nextChar;
 	}
 
 	return decMsg;
@@ -94,15 +112,15 @@ char FirstCryptor::FindCharWithVecFromZero( int vec, int zeroIndex )
 	int desiredIndex = zeroIndex + vec;
 
 	// Perform wrap around to make decypering harder
-	while( desiredIndex >= _mCharSetLength || desiredIndex < 0 )
+	while( desiredIndex >= CHAR_SET_SIZE || desiredIndex < 0 )
 	{
-		if( desiredIndex >= _mCharSetLength )
+		if( desiredIndex >= CHAR_SET_SIZE )
 		{
-			desiredIndex -= _mCharSetLength;
+			desiredIndex -= CHAR_SET_SIZE;
 		}
 		if( desiredIndex < 0 )
 		{
-			desiredIndex += _mCharSetLength;
+			desiredIndex += CHAR_SET_SIZE;
 		}
 	}
 
@@ -114,7 +132,7 @@ char FirstCryptor::FindCharWithVecFromZero( int vec, int zeroIndex )
 
 int FirstCryptor::FindNextZeroIndex()
 {
-	return rand() % _mCharSetLength;
+	return rand() % CHAR_SET_SIZE;
 }
 
 
@@ -125,7 +143,7 @@ int FirstCryptor::FindCharGlobalIndex( char c )
 	while( _mCharSet[ returnIndex ] != c )
 	{
 		returnIndex++;
-		if( returnIndex >= _mCharSetLength )
+		if( returnIndex >= CHAR_SET_SIZE )
 		{
 			printf( "%c is not a valid character, you may have:\n", c );
 			PrintCharSet();
@@ -137,36 +155,9 @@ int FirstCryptor::FindCharGlobalIndex( char c )
 }
 
 
-string FirstCryptor::AppendEnc( string base, int extension )
-{
-	return base + to_string( extension ) + _mSeparator;
-}
-
-
 void FirstCryptor::PrintCharSet()
 {
 	cout << "a - z ( lowercase and uppercase )" << endl;
 	cout << "0 - 9" << endl;
 	cout << "- _ * + & ^ % $ " << SPECIAL_CHAR_GBP << " ! ? / " << SPECIAL_CHAR_BACKSLASH << " > < @ |   ' : ; ( ) [ ] { } # ~ , ." << endl;
-}
-
-
-vector<string> FirstCryptor::BreakStringInTwo( string str, string target )
-{
-	// http://www.cplusplus.com/forum/beginner/85856/
-	// http://stackoverflow.com/questions/1181079/stringsize-type-instead-of-int
-	// Using unsigned int to maximise size and allow manipulation over string::size_type
-
-	vector<string> returnVal;
-	unsigned int firstCutPos = str.find( target );
-
-	if( firstCutPos == UINT_MAX )
-	{
-		cout << DecryptionErrorMSG << endl;
-		return returnVal;
-	}
-	returnVal.push_back( str.substr( 0, firstCutPos ) );
-	firstCutPos += target.length();
-	returnVal.push_back( str.substr( firstCutPos, str.length() ) );
-	return returnVal;
 }

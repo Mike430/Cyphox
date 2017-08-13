@@ -5,6 +5,7 @@
 #include <climits>
 
 #define ERROR_CODE -1000001
+#define CHAR_SET_SIZE 95
 
 static const char SPECIAL_CHAR_GBP = '\x9C';
 static const char SPECIAL_CHAR_BACKSLASH = '\\';
@@ -12,16 +13,13 @@ static const char SPECIAL_CHAR_BACKSLASH = '\\';
 class FirstCryptor : public Cypher
 {
 private:
-	static char _mCharSet[];
-	const string _mSeparator = "/";
-	int _mCharSetLength = 95;
+	static char _mCharSet[ CHAR_SET_SIZE ];
+	static char _mNegativeCharSet[ CHAR_SET_SIZE ];
 
 	int FindNextZeroIndex();
 	int FindVecForCharFromZeroIndex( char c, int zeroIndex );
 	char FindCharWithVecFromZero( int vec, int zeroIndex );
 	int FindCharGlobalIndex( char c );
-	string AppendEnc( string base, int extension );
-	vector<string> BreakStringInTwo(string str, string target);
 public:
 	FirstCryptor();
 	~FirstCryptor();
