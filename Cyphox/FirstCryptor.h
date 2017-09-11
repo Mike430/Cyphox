@@ -20,6 +20,7 @@ private:
 	int FindVecForCharFromZeroIndex( char c, int zeroIndex );
 	char FindCharWithVecFromZero( int vec, int zeroIndex );
 	int FindCharGlobalIndex( char c );
+	string BitwiseShift( string stringToShift, float percentage );
 public:
 	FirstCryptor();
 	~FirstCryptor();

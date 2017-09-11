@@ -34,6 +34,7 @@ string FirstCryptor::Encrypt( uint64_t seed, string decMsg )
 {
 	string encMsg = "";
 	srand( seed );
+	float randomPercentage = 0.01f * ( rand() % 100 );
 
 	for( int i = 0; i < decMsg.length(); i++ )
 	{
@@ -44,9 +45,11 @@ string FirstCryptor::Encrypt( uint64_t seed, string decMsg )
 			return "\nEncryption abandoned due to unqualified character\n";
 		}
 		char next = charPos < 0 ? _mNegativeCharSet[ charPos * -1 ] : _mCharSet[ charPos ];
-		next ^= seed;
+		//next ^= seed;
 		encMsg += next;
 	}
+
+	encMsg = BitwiseShift( encMsg, randomPercentage );
 
 	return encMsg;
 }
@@ -60,6 +63,9 @@ string FirstCryptor::Decrypt( uint64_t seed, string encMsg )
 	char queryChar;
 	int zeroIndex;
 	srand( seed );
+	float randomPercentage = 0.01 * ( rand() % 100 );
+
+	encMsg = BitwiseShift( encMsg, randomPercentage );
 
 	for( int i = 0; i < encMsg.size(); i++ )
 	{
@@ -67,7 +73,7 @@ string FirstCryptor::Decrypt( uint64_t seed, string encMsg )
 		charFound = false;
 		currentIndex = 0;
 
-		encMsg[ i ] ^= seed;
+		//encMsg[ i ] ^= seed;
 
 		// Find char index
 		while( charFound == false && currentIndex < CHAR_SET_SIZE * 2 )
@@ -76,7 +82,7 @@ string FirstCryptor::Decrypt( uint64_t seed, string encMsg )
 			if( encMsg[ i ] == queryChar )
 			{
 				charFound = true;
-				int queryCharVec = currentIndex >= CHAR_SET_SIZE ? ( (currentIndex - CHAR_SET_SIZE) * -1 ) : currentIndex;
+				int queryCharVec = currentIndex >= CHAR_SET_SIZE ? ( ( currentIndex - CHAR_SET_SIZE ) * -1 ) : currentIndex;
 				char nextChar = FindCharWithVecFromZero( queryCharVec, zeroIndex );
 				decMsg += nextChar;
 			}
@@ -152,6 +158,31 @@ int FirstCryptor::FindCharGlobalIndex( char c )
 	}
 
 	return returnIndex;
+}
+
+string FirstCryptor::BitwiseShift( string stringToShift, float percentage )
+{
+	string finalOutput = "";
+	int startingValue = ( int ) UINT8_MAX * percentage;
+
+	long test = UINT8_MAX;
+	cout << endl << startingValue << " / 255 - UINT8_MAX = " << test << endl;
+
+	for( size_t i = 0; i < stringToShift.size(); i++ )
+	{
+		finalOutput += stringToShift.at( i ) ^ startingValue % UINT8_MAX;
+		//finalOutput.at( i ) << 2;
+		if( startingValue >= UINT8_MAX )
+		{
+			startingValue = 0;
+		}
+		else
+		{
+			startingValue += 1;
+		}
+	}
+
+	return finalOutput;
 }
 
 
